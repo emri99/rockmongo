@@ -51,8 +51,11 @@
                         resizable: true,
                         closable:true,
                         slidable:true
+                    },
+                    useStateCookie: true,
+                    cookie: {
+                        name: 'rock_layout'
                     }
-
                 });
             });
 
