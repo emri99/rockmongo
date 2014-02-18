@@ -199,12 +199,12 @@ class CollectionController extends BaseController {
 		if (empty($criteria)) {
 			$criteria = array();
 			if ($format == "array") {
-				$native = "array(\n\t\n)";
+				$native = "array(\n \n)";
 			}
 			else if ($format == "json") {
 				$native = '{
-					
-}';				
+ 
+}';
 			}
 			x("pagesize", 10);
 		}
