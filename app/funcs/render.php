@@ -308,6 +308,7 @@ function render_doc_menu($dbName, $collectionName, $docId, $docIndex) {
 	$menuItems = array(
 		array (  "action" => "collection.none", "name" => rock_lang("text"), "attr.onclick" => "changeText('{$docIndex}');return false;" ),
 		array (  "action" => "collection.none", "name" => "Expand", "attr.id" => "expand_{$docIndex}", "attr.onclick" => "expandText('{$docIndex}');return false;" ),
+		array (  "action" => "collection.none", "name" => "Expand all", "attr.onclick" => "expandAll($(this));return false;", "attr.class" => "expand_all" ),
 	);
 	
 	//plugin
@@ -315,7 +316,7 @@ function render_doc_menu($dbName, $collectionName, $docId, $docIndex) {
 		RFilter::apply("DOC_MENU_FILTER", $menuItems, array( "dbName" => $dbName, "collectionName" => $collectionName, "docId" => $docId, "docIndex" => $docIndex ));
 	}	
 	
-	$displayCount = 2;
+	$displayCount = 3;
 	$hasMore = false;
 	
 	$string = "";

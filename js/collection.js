@@ -58,6 +58,24 @@ function expandText(id) {
 	}
 }
 
+/** expand all text area **/
+function expandAll(self) {
+	if (self.attr("expand") == "true") {
+		$('.expand_all').attr("expand", "false");
+		$('.expand_all').html("Expand All");
+	} 
+	else {
+		$('.expand_all').attr("expand", "true");
+		$('.expand_all').html("Collapse All");
+	}
+
+	// run expand
+	$('.record_row').each(function () {
+		var index = $(this).attr('record_index');
+		expandText(index);
+	});
+}
+
 //change command - findAll, modify, remove
 function changeCommand(select) {
 	//newobj input box
