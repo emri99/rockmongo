@@ -9,6 +9,10 @@
  * @package rockmongo
  */
  
+
+$GLOBALS["collection_preview_enabled"] = false; // Enables or disable collection preview (when you click on a collection)
+$GLOBALS["collection_pagesize"] = 10; // Controls the collection preview pagesize
+ 
 $MONGO = array();
 $MONGO["features"]["log_query"] = "on";//log queries
 $MONGO["features"]["theme"] = "default";//theme

@@ -99,6 +99,7 @@ class CollectionController extends BaseController {
 		//selected format last time
 		$this->last_format = rock_cookie("rock_format", "json");
 		
+		$defaultPageSize =  $GLOBALS["collection_pagesize"];
 		//write query to log
 		$params = xn();
 		if ($this->_logQuery && count($params) > 3) {//not only "action", "db" and "collection"
@@ -206,7 +207,7 @@ class CollectionController extends BaseController {
 					
 }';				
 			}
-			x("pagesize", 10);
+			x("pagesize", $defaultPageSize);
 		}
 		else {
 			$row = null;
@@ -254,7 +255,12 @@ class CollectionController extends BaseController {
 		//command
 		$command = x("command");
 		if (!$command) {
-			$command = "findAll";
+			 if($GLOBALS["collection_preview_enabled"]) {
+				$command = "findAll";
+			 }
+			 else {
+				$command = "none";
+			}
 			x("command", $command);
 		}
 		$limit = xi("limit");
