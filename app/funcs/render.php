@@ -331,7 +331,7 @@ function render_doc_menu($dbName, $collectionName, $docId, $docIndex) {
 	if (class_exists("RFilter")) {
 		RFilter::apply("DOC_MENU_FILTER", $menuItems, array( "dbName" => $dbName, "collectionName" => $collectionName, "docId" => $docId, "docIndex" => $docIndex ));
 	}
-	
+
 	$displayCount = 3;
 	$hasMore = false;
 
