@@ -572,7 +572,14 @@ function fieldOpQuery(link) {
 			"modal": true,
 			"title": "Query on field \"" + field + "\"",
 			"buttons":buttons,
-			"width": 420
+			"width": 420,
+			"open": function () {
+				$(".ui-widget-overlay").unbind("click").click(function () {
+					if ($(this).closest(".ui-dialog").length == 0) {
+						div.dialog("close");
+					}
+				});
+			}
 		});
 	});
 }
@@ -681,7 +688,14 @@ function fieldOpNew(link, id, field, recordIndex) {
 		"modal": true,
 		"title": "Add new field",
 		"buttons":buttons,
-		"width": 450
+		"width": 450,
+		"open": function () {
+			$(".ui-widget-overlay").unbind("click").click(function () {
+				if ($(this).closest(".ui-dialog").length == 0) {
+					div.dialog("close");
+				}
+			});
+		}
 	});
 }
 
@@ -810,7 +824,14 @@ function fieldOpUpdate(link, id, field, recordIndex) {
 			"modal": true,
 			"title": "Modify field \"" + field + "\" value",
 			"buttons":buttons,
-			"width": 450
+			"width": 450,
+			"open": function () {
+				$(".ui-widget-overlay").unbind("click").click(function () {
+					if ($(this).closest(".ui-dialog").length == 0) {
+						div.dialog("close");
+					}
+				});
+			}
 		});
 	});
 }
@@ -889,7 +910,14 @@ function fieldOpRename(link) {
 		"modal": true,
 		"title": "Rename field \"" + field + "\"",
 		"buttons":buttons,
-		"width": 420
+		"width": 420,
+		"open": function () {
+			$(".ui-widget-overlay").unbind("click").click(function () {
+				if ($(this).closest(".ui-dialog").length == 0) {
+					div.dialog("close");
+				}
+			});
+		}
 	});
 }
 
@@ -941,7 +969,14 @@ function fieldOpRemove(link) {
 		"modal": true,
 		"title": "Remove field \"" + field + "\"",
 		"buttons":buttons,
-		"width": 420
+		"width": 420,
+		"open": function () {
+			$(".ui-widget-overlay").unbind("click").click(function () {
+				if ($(this).closest(".ui-dialog").length == 0) {
+					div.dialog("close");
+				}
+			});
+		}
 	});
 }
 
@@ -993,7 +1028,14 @@ function fieldOpClear(link) {
 		"modal": true,
 		"title": "Clear field \"" + field + "\"",
 		"buttons":buttons,
-		"width": 420
+		"width": 420,
+		"open": function () {
+			$(".ui-widget-overlay").unbind("click").click(function () {
+				if ($(this).closest(".ui-dialog").length == 0) {
+					div.dialog("close");
+				}
+			});
+		}
 	});
 }
 
@@ -1064,7 +1106,14 @@ function fieldOpIndexes(link) {
 				"modal": true,
 				"title": "Indexes on field \"" + field + "\"",
 				"buttons":buttons,
-				"width": 450
+				"width": 450,
+				"open": function () {
+					$(".ui-widget-overlay").unbind("click").click(function () {
+						if ($(this).closest(".ui-dialog").length == 0) {
+							div.dialog("close");
+						}
+					});
+				}
 			});
 		},
 		url: "index.php?action=field.indexes",
@@ -1169,6 +1218,9 @@ function showQueryHistory() {
 					}
 				});
 			}
+		},
+		"Close": function () {
+			$(this).dialog("close");
 		}
 	};
 	
@@ -1183,7 +1235,16 @@ function showQueryHistory() {
 				"modal": true,
 				"title": "Query History",
 				"buttons":buttons,
-				"width": 450
+				"width": 450,
+				"open": function(event, ui) {
+			        $("button").blur();
+			        
+			        $(".ui-widget-overlay").unbind("click").click(function () {
+						if ($(this).closest(".ui-dialog").length == 0) {
+							div.dialog("close");
+						}
+					});
+			    }
 			});
 		}
 		
