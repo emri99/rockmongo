@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 v1.1.7 - 2014-02-12
 * Added mixed-mode highlighting
 
