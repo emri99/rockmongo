@@ -180,7 +180,7 @@ class VarEval {
 		// fallback to regular JSON parsing
 		return json_decode($this->_source, true);
 		}
-		return false;
+		return json_decode($this->_source, true);
 	}
 
 	private function _fixEmptyObject(&$object) {

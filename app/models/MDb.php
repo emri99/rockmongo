@@ -7,7 +7,7 @@ class MDb {
 	 * @param MongoDB $db DB
 	 * @param string $code javascript code
 	 * @param array $params javascript function parameters
-	 * @return array 
+	 * @return array
 	 */
 	static function exec(MongoDB $db, $code, array $params = array()) {
 		$query = $db->execute($code, $params);
@@ -16,23 +16,28 @@ class MDb {
 		}
 		return $query["retval"];
 	}
-	
+
 	/**
 	 * List collections in a DB
-	 * 
+	 *
 	 * @param MongoDB $db DB
 	 * @return array<MongoCollection>
 	 */
 	static function listCollections(MongoDB $db) {
 		$server = MServer::currentServer();
-		
+
 		$names = array();
 
-		try {
-			$names = $db->getCollectionNames(true);
-		} catch(Exception $e) {
-			
-		}
+		$query = $db->execute("function (){ return db.getCollectionNames(); }", array());
+        if ($query["ok"]) {
+            $names= $query["retval"];
+        }
+        else{
+            $colls = $db->listCollections(true);
+            foreach($colls as $coll){
+                $names[] = $coll->getName();
+            }
+        }
 
 		$ret = array();
 		foreach ($names as $name) {
@@ -45,7 +50,7 @@ class MDb {
 			$ret[] = $name;
 		}
 		sort($ret);
-		
+
 		//system collections
 		if (!$server->uiHideSystemCollections()) {
 			foreach ($names as $name) {
