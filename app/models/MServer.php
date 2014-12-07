@@ -4,6 +4,7 @@ import("lib.mongo.RMongo");
 
 class MServer {
 	private $_mongoName = null;
+	private $_mongoSock = null;
 	private $_mongoHost = "127.0.0.1";
 	private $_mongoPort = 27017;
 	private $_mongoUser = "";
@@ -19,26 +20,25 @@ class MServer {
 	private $_uiHideDbs;
 	private $_uiHideCollections;
 	private $_uiHideSystemCollections = false;
-	
+
 	private $_docsNatureOrder = false;
 	private $_docsRender = "default";
 	private $_docsRenderLimit = 2000;
-	
 	/**
 	 * the server you are operating
-	 * 
+	 *
 	 * @var MServer
 	 */
 	private static $_currentServer;
 	private static $_servers = array();
-	
+
 	/**
 	 * Mongo connection object
-	 * 
+	 *
 	 * @var RMongo
 	 */
 	private $_mongo;
-	
+
 	public function __construct(array $config) {
 		foreach ($config as $param => $value) {
 			switch ($param) {
@@ -47,6 +47,9 @@ class MServer {
 					break;
 				case "mongo_host":
 					$this->_mongoHost = $value;
+					break;
+				case "mongo_sock":
+					$this->_mongoSock = $value;
 					break;
 				case "mongo_port":
 					$this->_mongoPort = $value;
@@ -105,91 +108,91 @@ class MServer {
 			$this->_mongoName = $this->_mongoHost . ":" . $this->_mongoPort;
 		}
 	}
-	
+
 	public function mongoName() {
 		return $this->_mongoName;
 	}
-	
+
 	public function setMongoName($mongoName) {
 		$this->_mongoName = $mongoName;
 	}
-	
+
 	public function mongoAuth() {
 		return $this->_mongoAuth;
 	}
-	
+
 	public function setMongoAuth($mongoAuth) {
 		$this->_mongoAuth = $mongoAuth;
 	}
-	
+
 	public function mongoHost() {
 		return $this->_mongoHost;
 	}
-	
+
 	public function setMongoHost($mongoHost) {
 		$this->_mongoHost = $mongoHost;
 	}
-	
+
 	public function mongoPort() {
 		return $this->_mongoPort;
 	}
-	
+
 	public function setMongoPort($mongoPort) {
 		$this->_mongoPort = $mongoPort;
 	}
-	
+
 	public function mongoUser() {
 		return $this->_mongoUser;
 	}
-	
+
 	public function setMongoUser($mongoUser) {
 		$this->_mongoUser = $mongoUser;
 	}
-	
+
 	public function mongoPass() {
 		return $this->_mongoPass;
 	}
-	
+
 	public function setMongoPass($mongoPass) {
 		$this->_mongoPass = $mongoPass;
 	}
-	
+
 	public function mongoTimeout() {
 		return $this->_mongoTimeout;
 	}
-	
+
 	public function setMongoTimeout($timeout) {
 		$this->_mongoTimeout = $timeout;
 	}
-	
+
 	public function mongoDb() {
 		return $this->_mongoDb;
 	}
-	
+
 	public function setMongoDb($db) {
 		$this->_mongoDb = $db;
 	}
-	
+
 	public function controlAuth() {
 		return $this->_controlAuth;
 	}
-	
+
 	public function setControlAuth($controlAuth) {
 		$this->_controlAuth = $controlAuth;
 	}
-	
+
 	public function addControlUser($user, $pass) {
 		$this->_controlUsers[$user] = $pass;
 	}
-	
+
 	public function controlUsers() {
 		return $this->_controlUsers;
 	}
-	
+
 	public function setControlUsers(array $users) {
 		$this->_controlUsers = $users;
 	}
-	
+
 	public function uiOnlyDbs() {
 		if (empty($this->_uiOnlyDbs)) {
 			return array();
@@ -199,11 +202,11 @@ class MServer {
 		}
 		return $this->_uiOnlyDbs;
 	}
-	
+
 	public function setUIOnlyDbs($dbs) {
 		$this->_uiOnlyDbs = $dbs;
 	}
-	
+
 	public function uiHideDbs() {
 		if (empty($this->_uiHideDbs)) {
 			return array();
@@ -213,41 +216,41 @@ class MServer {
 		}
 		return $this->_uiHideDbs;
 	}
-	
+
 	public function setUIHideDbs($dbs) {
 		$this->_uiHideDbs = $dbs;
 	}
-	
+
 	public function uiHideCollections() {
 		if (is_array($this->_uiHideCollections)) {
 			return $this->_uiHideCollections;
 		}
 		return preg_split("/\\s*,\\s*/", $this->_uiHideCollections);
 	}
-	
+
 	public function setUIHideCollections($collections) {
 		$this->_uiHideCollections = $collections;
 	}
-	
+
 	public function uiHideSystemCollections() {
 		return $this->_uiHideSystemCollections;
 	}
-	
+
 	public function setUIHideSystemCollections($bool) {
 		$this->_uiHideSystemCollections = $bool;
 	}
-	
+
 
 	/**
 	 * Set whether documents nature order
-	 * 
+	 *
 	 * @param boolean $bool true or false
 	 * @since 1.1.6
 	 */
 	public function setDocsNatureOrder($bool) {
 		$this->_docsNatureOrder = $bool;
 	}
-	
+
 	/**
 	 * Whether documents are in nature order
 	 * @return boolean
@@ -256,16 +259,14 @@ class MServer {
 	public function docsNatureOrder() {
 		return $this->_docsNatureOrder;
 	}
-	
 	/**
 	 * Set documents highlight render
-	 * 
-	 * @param string $render can be "default", "plain" or "mixed"
+	 *
+	 * @param string $render can be "default" or "plain"
 	 * @since 1.1.6
 	 */
 	public function setDocsRender($render) {
-		$renders = array( "default", "plain", "mixed" );
-		
+		$renders = array( "default", "plain" );
 		if (in_array($render, $renders)) {
 			$this->_docsRender = $render;
 		}
@@ -273,27 +274,27 @@ class MServer {
 			exit("docs_render should be 'default', 'plain' or 'mixed'");
 		}
 	}
-	
+
 	/**
 	 * Get documents highlight render
-	 * 
+	 *
 	 * @return string
 	 * @since 1.1.6
 	 */
 	public function docsRender() {
 		return $this->_docsRender;
 	}
-	
+
 	/**
 	 * Get documents highlight render limit
-	 * 
+	 *
 	 * @return int
 	 * @since 1.1.7
 	 */
 	public function docsRenderLimit() {
 		return $this->_docsRenderLimit;
 	}
-	
+
 	public function auth($username, $password, $db = "admin") {
 		if ($db === "") {
 			if (!$this->_mongoAuth && $this->_mongoDb) {
@@ -303,7 +304,13 @@ class MServer {
 				$db = "admin";
 			}
 		}
-		$server = $this->_mongoHost . ":" . $this->_mongoPort;
+		$server = null;
+		if ($this->_mongoSock) {//connect through sock
+			$server = $this->_mongoSock;
+		}
+		else {//connect through host:port
+			$server = $this->_mongoHost . ":" . $this->_mongoPort;
+		}
 		if (!$this->_mongoPort) {
 			$server = $this->_mongoHost;
 		}
@@ -313,6 +320,16 @@ class MServer {
 				$options["username"] = $username;
 				$options["password"] = $password;
 				$options["db"] = $db;
+			}
+
+			//after 1.2.11 use options to authenticate
+			if(!$this->_mongoAuth && !empty($this->_mongoUser) && !empty($this->_mongoPass) && RMongo::compareVersion("1.2.11") > 0) {
+				$options["username"] = $this->_mongoUser;
+				$options["password"] = $this->_mongoPass;
+
+				if (!empty($this->_mongoDb)) {
+					$options["db"] = $this->_mongoDb;
+				}
 			}
 			$this->_mongo = new RMongo($server, $options);
 			$this->_mongo->setSlaveOkay(true);
@@ -324,10 +341,12 @@ class MServer {
 			echo "Unable to connect MongoDB, please check your configurations. MongoDB said:" . $e->getMessage() . ".";
 			exit();
 		}
-		
+
 		// changing timeout to the new value
-		MongoCursor::$timeout = $this->_mongoTimeout;
-		
+		if (RMongo::compareVersion("1.5.0") < 0) {
+			MongoCursor::$timeout = $this->_mongoTimeout;
+		}
+
 		//auth by mongo
 		if ($this->_mongoAuth) {
 			// "authenticate" can only be used between 1.0.1 - 1.2.11
@@ -349,7 +368,7 @@ class MServer {
 			if (!isset($this->_controlUsers[$username]) || $this->_controlUsers[$username] != $password) {
 				return false;
 			}
-			
+
 			//authenticate
 			if (!empty($this->_mongoUser)) {
 				// "authenticate" can only be used between 1.0.1 - 1.2.11
@@ -373,7 +392,7 @@ class MServer {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Current Mongo object
 	 *
@@ -382,7 +401,7 @@ class MServer {
 	public function mongo() {
 		return $this->_mongo;
 	}
-	
+
 	/**
 	 * List databases on the server
 	 *
@@ -397,7 +416,7 @@ class MServer {
 		}
 		if (empty($dbs["ok"])) {
 			$user = MUser::userInSession();
-			
+
 			$dbs = array(
 				"databases" => array(),
 				"totalSize" => 0,
@@ -421,24 +440,29 @@ class MServer {
 		}
 		return $dbs;
 	}
-	
+
 	/**
 	 * Construct mongo server connection URI
 	 *
 	 * @return string
 	 */
 	public function uri() {
-		$host = $this->_mongoHost . ":" . $this->_mongoPort;
+		$host = null;
+		if ($this->_mongoSock) {
+			$host = $this->_mongoSock;
+		} else {
+			$host = $this->_mongoHost . ":" . $this->_mongoPort;
+		}
 		if ($this->_mongoAuth) {
 			$user = MUser::userInSession();
 			return $user->username() . ":" . $user->password() . "@" . $host;
 		}
 		if (empty($this->_mongoUser)) {
-			return $host;
+			return 'mongodb://' . $host;
 		}
-		return $this->_mongoUser . ":" . $user->_mongoPass . "@" . $host;
+		return 'mongodb://' . $this->_mongoUser . ":" . $user->_mongoPass . "@" . $host;
 	}
-	
+
 	/**
 	 * Should we hide the collection
 	 *
@@ -453,7 +477,7 @@ class MServer {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Enter description here ...
 	 *
@@ -470,8 +494,8 @@ class MServer {
 		}
 		self::$_currentServer = self::$_servers[$hostIndex];
 		return self::$_servers[$hostIndex];
-	}	
-	
+	}
+
 	/**
 	 * Enter description here ...
 	 *

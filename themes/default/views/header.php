@@ -2,7 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-<title>RockMongo</title>
+<title>
+<?php foreach ($servers as $index => $server):?>
+	<?php if($index == $serverIndex): ?>
+		<?php echo $server["mongo_name"] ?>
+	<?php endif ?>
+<?php endforeach ?>
+</title>
 <script language="javascript" src="js/jquery-1.4.2.min.js"></script>
 <script language="javascript" src="js/jquery.textarea.js"></script>
 <link rel="stylesheet" href="<?php render_theme_path() ?>/css/global.css" type="text/css" media="all"/>
@@ -12,9 +18,9 @@ $(function () {
 	$(document).click(window.parent.hideMenus);
 	if ($("textarea").length > 0) {
 		$("textarea").tabby();
-		
-		
-		// Search with ID field 
+
+
+		// Search with ID field
  		var elTextField = $("<input />").attr({type: 'text', size: 30}).keypress(function(e) {
 	            if (e.keyCode == '13') {
 	                e.preventDefault();
@@ -35,8 +41,8 @@ $(function () {
 	            .append(' ')
 	            .append(elButton)
 	            .prependTo('#query_form');
-            
-            
+
+
 	}
 });
 </script>
