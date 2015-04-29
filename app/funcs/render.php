@@ -332,7 +332,7 @@ function render_doc_menu($dbName, $collectionName, $docId, $docIndex) {
 		RFilter::apply("DOC_MENU_FILTER", $menuItems, array( "dbName" => $dbName, "collectionName" => $collectionName, "docId" => $docId, "docIndex" => $docIndex ));
 	}
 
-	$displayCount = 2;
+	$displayCount = 3;
 	$hasMore = false;
 
 	$string = "";

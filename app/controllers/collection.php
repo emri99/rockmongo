@@ -205,6 +205,7 @@ class CollectionController extends BaseController {
 			}
 			else if ($format == "json") {
 				$native = '{
+
 }';
 			}
 			x("pagesize", $defaultPageSize);
