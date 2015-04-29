@@ -3,16 +3,21 @@
  * RockMongo configuration
  *
  * Defining default options and server configuration
- *
- * Copy config-sample.php > config.php and make your changes to the config.php.
- *
  * @package rockmongo
  */
- 
 
-$GLOBALS["collection_preview_enabled"] = false; // Enables or disable collection preview (when you click on a collection)
-$GLOBALS["collection_pagesize"] = 10; // Controls the collection preview pagesize
- 
+// session store configurating
+
+// Timeuot of session in seconds
+ini_set('gc_maxlifetime', 60*60*3); //3 hours
+
+// this defines, where session files will be stored.
+// it is important in this case: http://php.net/manual/en/session.configuration.php#ini.session.gc-maxlifetime
+$currentSessionPath = ini_get('session.save_path');
+$save_path = $currentSessionPath . DIRECTORY_SEPARATOR . 'rockmongo';
+if (!is_dir($save_path)) mkdir($save_path, 0777, true);
+ini_set('session.save_path', $save_path);
+
 $MONGO = array();
 $MONGO["features"]["log_query"] = "on";//log queries
 $MONGO["features"]["theme"] = "default";//theme
@@ -44,8 +49,7 @@ $MONGO["servers"][$i]["ui_hide_collections"] = "";//collections to hide
 $MONGO["servers"][$i]["ui_hide_system_collections"] = false;//whether hide the system collections
 
 //$MONGO["servers"][$i]["docs_nature_order"] = false;//whether show documents by nature order, default is by _id field
-//$MONGO["servers"][$i]["docs_render"] = "mixed";//document highlight render, can be "default", "plain" or "mixed"
-//$MONGO["servers"][$i]["docs_render_limit"] = 2000; //in "mixed" mode, documents smaller than this size will highlighted, rest in plain.
+//$MONGO["servers"][$i]["docs_render"] = "default";//document highlight render, can be "default" or "plain"
 
 $i ++;
 
@@ -59,6 +63,5 @@ $MONGO["servers"][$i]["mongo_port"] = "27017";
 $MONGO["servers"][$i]["control_users"]["admin"] = "password";
 $i ++;
 **/
-
 
 ?>

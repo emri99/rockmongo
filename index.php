@@ -32,11 +32,7 @@ if (PHP_INT_SIZE == 8) {
 /**
 * Initializing configuration files and RockMongo
 */
-if (file_exists("config.php")) {
-    require "config.php";
-} else {
-    require "config-sample.php";
-}
+require "config.php";
 require "rock.php";
 rock_check_version();
 rock_init_lang();
