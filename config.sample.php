@@ -6,6 +6,9 @@
  * @package rockmongo
  */
 
+$GLOBALS["collection_preview_enabled"] = false; // Enables or disable collection preview (when you click on a collection)
+$GLOBALS["collection_pagesize"] = 10; // Controls the collection preview pagesize
+
 // session store configurating
 
 // Timeuot of session in seconds
@@ -27,7 +30,7 @@ $i = 0;
 
 /**
 * Configuration of MongoDB servers
-* 
+*
 * @see more details at http://rockmongo.com/wiki/configuration?lang=en_us
 */
 $MONGO["servers"][$i]["mongo_name"] = "Localhost";//mongo server name

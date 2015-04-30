@@ -2,13 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-<title>
-<?php foreach ($servers as $index => $server):?>
-	<?php if($index == $serverIndex): ?>
-		<?php echo $server["mongo_name"] ?>
-	<?php endif ?>
-<?php endforeach ?>
-</title>
+<title>RockMongo</title>
 <script language="javascript" src="js/jquery-1.4.2.min.js"></script>
 <script language="javascript" src="js/jquery.textarea.js"></script>
 <link rel="stylesheet" href="<?php render_theme_path() ?>/css/global.css" type="text/css" media="all"/>
@@ -19,15 +13,8 @@ $(function () {
 	$(document).click(window.parent.hideMenus);
 	if ($("textarea").length > 0) {
 		$("textarea").tabby();
-<<<<<<< HEAD
-
 
 		// Search with ID field
-=======
-		
-		
-		// Search with ID field 
->>>>>>> dolarion/master
  		var elTextField = $("<input />").attr({type: 'text', size: 30}).keypress(function(e) {
 	            if (e.keyCode == '13') {
 	                e.preventDefault();
@@ -38,11 +25,7 @@ $(function () {
 	                                        .bind('click', function (e) {
 	                                            var v = $(this).parent().find('input:first').val();
 	                                            // заветная строка!
-<<<<<<< HEAD
 	                                            $('#query_form textarea').val('{\n\t\"_id\": ObjectId(\"'+v+'\")\n}');
-=======
-	                                            $('#query_form textarea').val('{\n\"_id\": ObjectId(\"'+v+'\")\n}');
->>>>>>> dolarion/master
 	                                            $('#query_form').submit();
 	                                        });
 	        $("<div />")
@@ -52,13 +35,6 @@ $(function () {
 	            .append(' ')
 	            .append(elButton)
 	            .prependTo('#query_form');
-<<<<<<< HEAD
-
-
-=======
-            
-            
->>>>>>> dolarion/master
 	}
 });
 </script>
