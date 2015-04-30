@@ -218,7 +218,9 @@ class CollectionController extends BaseController {
 				$row = get_object_vars($row);
 			}
 			if (!is_array($row)) {
-				$this->message = "Criteria must be a valid " . (($format == "json") ? "JSON object" : "array");
+				$this->message = sprintf('Criteria must be a valid %s.<br/><strong>Error : </strong><br/>%s',
+					$format == 'json' ? 'JSON object' : 'array',
+					$eval->lastError());
 				$this->jsonLink = "#";
 				$this->arrayLink = "#";
 				$this->display();
