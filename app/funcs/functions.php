@@ -7,22 +7,22 @@
  * @return string utf-8 string
  */
 function json_unicode_to_utf8($json){
-	$json = preg_replace_callback("/\\\\u([0-9a-f]{4})/", create_function('$match', '
-		$val = intval($match[1], 16);
-		$c = "";
-		if($val < 0x7F){        // 0000-007F
-			$c .= chr($val);
-		} elseif ($val < 0x800) { // 0080-0800
-			$c .= chr(0xC0 | ($val / 64));
-			$c .= chr(0x80 | ($val % 64));
-		} else {                // 0800-FFFF
-			$c .= chr(0xE0 | (($val / 64) / 64));
-			$c .= chr(0x80 | (($val / 64) % 64));
-			$c .= chr(0x80 | ($val % 64));
-		}
-		return $c;
-	'), $json);
-	return $json;
+    $json = preg_replace_callback("/\\\\u([0-9a-f]{4})/", create_function('$match', '
+        $val = intval($match[1], 16);
+        $c = "";
+        if($val < 0x7F){        // 0000-007F
+            $c .= chr($val);
+        } elseif ($val < 0x800) { // 0080-0800
+            $c .= chr(0xC0 | ($val / 64));
+            $c .= chr(0x80 | ($val % 64));
+        } else {                // 0800-FFFF
+            $c .= chr(0xE0 | (($val / 64) / 64));
+            $c .= chr(0x80 | (($val / 64) % 64));
+            $c .= chr(0x80 | ($val % 64));
+        }
+        return $c;
+    '), $json);
+    return $json;
 }
 
 /**
@@ -33,23 +33,24 @@ function json_unicode_to_utf8($json){
  */
 function json_format_html($json)
 {
-	$json = json_unicode_to_utf8($json);
+    $json = json_unicode_to_utf8($json);
     $tab = "&nbsp;&nbsp;";
     $new_json = "";
     $indent_level = 0;
     $in_string = false;
 
-    $len	= mb_strlen($json);
-    $chars	= preg_split('//u',$json, -1, PREG_SPLIT_NO_EMPTY);
+    $chars = preg_split('//u',$json, -1, PREG_SPLIT_NO_EMPTY);
+    $len = count($chars);
+
 
     for($c = 0; $c < $len; $c++)
     {
-    	$char = $chars[$c];
+        $char = $chars[$c];
         switch($char)
         {
             case '{':
             case '[':
-            	$char = "<font color=\"green\">" . $char . "</font>";//iwind
+                $char = "<font color=\"green\">" . $char . "</font>";//iwind
                 if(!$in_string) {
                     $new_json .= $char . "<br/>" . str_repeat($tab, $indent_level+1);
                     $indent_level++;
@@ -60,7 +61,7 @@ function json_format_html($json)
                 break;
             case '}':
             case ']':
-            	$char = "<font color=\"green\">" . $char . "</font>";//iwind
+                $char = "<font color=\"green\">" . $char . "</font>";//iwind
                 if(!$in_string)
                 {
                     $indent_level--;
@@ -72,7 +73,7 @@ function json_format_html($json)
                 }
                 break;
             case ',':
-            	$char = "<font color=\"green\">" . $char . "</font>";//iwind
+                $char = "<font color=\"green\">" . $char . "</font>";//iwind
                 if(!$in_string) {
                     $new_json .= ",<br/>" . str_repeat($tab, $indent_level);
                 }
@@ -81,7 +82,7 @@ function json_format_html($json)
                 }
                 break;
             case ':':
-            	$char = "<font color=\"green\">" . $char . "</font>";//iwind
+                $char = "<font color=\"green\">" . $char . "</font>";//iwind
                 if($in_string) {
                     $new_json .= ":";
                 }
@@ -93,35 +94,35 @@ function json_format_html($json)
                 if($c > 0 && $chars[$c-1] != '\\') {
                     $in_string = !$in_string;
                     if ($in_string) {
-                    	$new_json .= "<font color=\"#DD0000\" class=\"string_var\">" . $char;
+                        $new_json .= "<font color=\"#DD0000\" class=\"string_var\">" . $char;
                     }
                     else {
-                    	$new_json .= $char . "</font>";
+                        $new_json .= $char . "</font>";
                     }
-       				break;
+                    break;
                 }
                 else if ($c == 0) {
-                	$in_string = !$in_string;
-                	$new_json .= "<font color=\"red\">" . $char;
-                	break;
+                    $in_string = !$in_string;
+                    $new_json .= "<font color=\"red\">" . $char;
+                    break;
                 }
             default:
-            	if (!$in_string && trim($char) !== "") {
-            		$char = "<font color=\"blue\">" . $char . "</font>";
-            	}
-            	else {
-            		if ($char == "&" || $char == "'" || $char == "\"" || $char == "<" || $char == ">") {
-            			$char = htmlspecialchars($char);
-            		}
-            	}
+                if (!$in_string && trim($char) !== "") {
+                    $char = "<font color=\"blue\">" . $char . "</font>";
+                }
+                else {
+                    if ($char == "&" || $char == "'" || $char == "\"" || $char == "<" || $char == ">") {
+                        $char = htmlspecialchars($char);
+                    }
+                }
                 $new_json .= $char;
                 break;
         }
     }
     $new_json = preg_replace_callback("{(<font color=\"blue\">([\\da-zA-Z_\\.]+)</font>)+}", create_function('$match','
-    	$string = str_replace("<font color=\"blue\">", "", $match[0]);
-    	$string = str_replace("</font>", "", $string);
-    	return "<font color=\"blue\" class=\"no_string_var\">" . $string  . "</font>";
+        $string = str_replace("<font color=\"blue\">", "", $match[0]);
+        $string = str_replace("</font>", "", $string);
+        return "<font color=\"blue\" class=\"no_string_var\">" . $string  . "</font>";
     '), $new_json);
     return $new_json;
 }
@@ -246,22 +247,22 @@ function json_format($json)
  * @since 1.1.7
  */
 function r_human_bytes($bytes, $precision = 2) {
-	if ($bytes == 0) {
-		return 0;
-	}
-	if ($bytes < 1024) {
-		return $bytes . "B";
-	}
-	if ($bytes < 1024 * 1024) {
-		return round($bytes/1024, $precision) . "k";
-	}
-	if ($bytes < 1024 * 1024 * 1024) {
-		return round($bytes/1024/1024, $precision) . "m";
-	}
-	if ($bytes < 1024 * 1024 * 1024 * 1024) {
-		return round($bytes/1024/1024/1024, $precision) . "g";
-	}
-	return $bytes;
+    if ($bytes == 0) {
+        return 0;
+    }
+    if ($bytes < 1024) {
+        return $bytes . "B";
+    }
+    if ($bytes < 1024 * 1024) {
+        return round($bytes/1024, $precision) . "k";
+    }
+    if ($bytes < 1024 * 1024 * 1024) {
+        return round($bytes/1024/1024, $precision) . "m";
+    }
+    if ($bytes < 1024 * 1024 * 1024 * 1024) {
+        return round($bytes/1024/1024/1024, $precision) . "g";
+    }
+    return $bytes;
 }
 
 /**
@@ -272,13 +273,13 @@ function r_human_bytes($bytes, $precision = 2) {
  * @since 1.1.8
  */
 function r_get_collection_icon($collectionName) {
-	if (preg_match("/\\.(files|chunks)$/", $collectionName)){
-		return "grid";
-	}
-	if (preg_match("/^system\\.js$/", $collectionName)) {
-		return "table-systemjs";
-	}
-	return "table";
+    if (preg_match("/\\.(files|chunks)$/", $collectionName)){
+        return "grid";
+    }
+    if (preg_match("/^system\\.js$/", $collectionName)) {
+        return "table-systemjs";
+    }
+    return "table";
 }
 
 ?>
