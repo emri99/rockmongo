@@ -5,7 +5,7 @@ window.parent.frames["left"].highlightCollection(currentCollection, currentRecor
 
 /**
  * Pad leading zero to numbers
- * 
+ *
  * @param integer number Number to pad
  * @param integer count Zero count
  * @return string
@@ -26,7 +26,7 @@ function r_pad_zero(number, count) {
 }
 
 /*
- * show operation buttons for one row 
+ * show operation buttons for one row
  */
 function showOperationButtons(id) {
 	var row = $("#object_" + id);
@@ -63,7 +63,7 @@ function expandAll(self) {
 	if (self.attr("expand") == "true") {
 		$('.expand_all').attr("expand", "false");
 		$('.expand_all').html("Expand All");
-	} 
+	}
 	else {
 		$('.expand_all').attr("expand", "true");
 		$('.expand_all').html("Collapse All");
@@ -86,7 +86,7 @@ function changeCommand(select) {
 	else {
 		$("#newobjInput").hide();
 	}
-	
+
 	//limit input box
 	if (value == "findAll") {
 		$("#limitLabel").show();
@@ -99,33 +99,25 @@ function changeCommand(select) {
 		$("#fieldsAndHints").hide();
 	}
 
-    var queryBox = $('.query');
-    if(value=='modify'){
-        queryBox.removeClass('query_delete');
-        queryBox.addClass('query_modify');
-    } else if(value=='remove'){
-        queryBox.addClass('query_delete');
-        queryBox.removeClass('query_modify');
-    } else {
-        queryBox.removeClass('query_delete');
-        queryBox.removeClass('query_modify');
-    }
+	var queryBox = $('.query');
+	queryBox.removeClass('query_delete');
+	queryBox.removeClass('query_modify');
+	if(value=='modify'){
+		queryBox.addClass('query_modify');
+	} else if(value=='remove'){
+		queryBox.addClass('query_delete');
+	}
 }
 
 function checkSubmitQuery(){
-    var method = $('select[name=command]').val(),
-        isChangeQuery = false;
-    if(method=='modify'){
-        isChangeQuery = true;
-    }
-    if(method=='remove'){
-        isChangeQuery = true;
-    }
+	var
+		method = $('select[name=command]').val(),
+		isChangeQuery = method === 'modify' || method === 'remove';
 
-    if(isChangeQuery===true){
-        return confirm('Do you really want to run the query in "'+(method.toUpperCase())+'" mode?');
-    }
-    return true;
+	if(isChangeQuery===true){
+		return confirm('Do you really want to run the query in "'+(method.toUpperCase())+'" mode?');
+	}
+	return true;
 }
 
 //switch html and text
@@ -177,14 +169,14 @@ function setManualPosition(className, x, y) {
 		});
 	}
 }
- 
+
 /** hide menus **/
 function hideMenus() {
 	$(".menu").hide();
 }
 
 /**
- * display query fields 
+ * display query fields
  */
 function showQueryFields(link) {
 	var fields = $("#query_fields_list");
@@ -202,7 +194,7 @@ function closeQueryFields() {
 }
 
 /**
- * show query hints div 
+ * show query hints div
  */
 function showQueryHints(link) {
 	var fields = $("#query_hints_list");
@@ -239,13 +231,13 @@ function countChecked(name) {
 function showFieldOperations(link, field) {
 	var link = $(link);
 	var menu = $("#field_menu");
-	
+
 	setManualPosition("#field_menu", link.position().left, link.position().top + link.height());
 	var parent = link.parent();
 	while (!parent.is(".record_row")) {
 		parent = parent.parent();
 	}
-	
+
 	//should show "Hide" and "Show"
 	if (field == "_id") {//if we are _id, do nothing
 		menu.children().hide();
@@ -272,11 +264,51 @@ function showFieldOperations(link, field) {
 		menu.find(".field_op_hide_show_seperator").show();
 		menu.find(".field_op_hide")	.show();
 	}
-	
+
 	var links = menu.find("a");
 	links.attr("record_id", parent.attr("record_id"));
 	links.attr("field", field);
 	links.attr("record_index", parent.attr("record_index"));
+}
+
+/**
+ * init helper button "Select by Id"
+ */
+function initSelectByIdHelper() {
+	var
+		$form = $('#query_form'),
+		$format = $('input[name=format]', $form),
+		$textarea = $('textarea:first', $form),
+		$selectByIDField = $('[data-name=select-by-id-field]', $form)
+			.keypress(function selectByIdFieldKeypress(e) {
+				if (e.keyCode == '13') {
+					e.preventDefault();
+					submit(e.shiftKey);
+				}
+			}),
+		submit = function selectByIdSubmit(noMongoId) {
+			var
+				rst = { array: 'array(\n\t\n)', json: '{\n\t\n}' },
+				id = $selectByIDField.val(),
+				type = $format.val(),
+				values = noMongoId
+					? {
+						array: 'array (\n\t"_id" => "'+id+'"\n)',
+						json:  '{\n\t"_id": "'+id+'"\n}'
+					} : {
+						array: 'array (\n\t"_id" => new MongoId("'+id+'")\n)',
+						json:  '{\n\t\"_id\": ObjectId(\"'+id+'\")\n}'
+					},
+				newVal = id ? values[type] : rst[type];
+
+				if (!id && $textarea.val() == newVal) return;
+				$textarea.val(newVal);
+				$form.submit();
+		};
+
+	$('[data-name=select-by-id-button]', $form).bind('click', function(e) {
+		submit(e.shiftKey);
+	});
 }
 
 /**
@@ -300,7 +332,7 @@ function initFieldMenu() {
 }
 
 /**
- * init menu on data 
+ * init menu on data
  */
 function initDataMenu() {
 	$(".string_var").click(function () {
@@ -328,17 +360,17 @@ function initDataMenu() {
 function showDataMenu(link, text) {
 	var link = $(link);
 	var text = unescape(text);
-	
+
 	var menu = [];
 	var width = 100;
-	
+
 	//File size format
 	if (text.match(/^[\d\.]+$/)) {
 		var n = parseFloat(text);
 		menu.push("ToK: " + (Math.round(n/1024*100)/100) + "K");
 		menu.push("ToM: " + (Math.round(n/1024/1024*100)/100) + "M");
 		menu.push("ToG: " + (Math.round(n/1024/1024/1024*100)/100) + "G");
-		
+
 		//Date format
 		if (text.length >= 10) {
 			var date =  new Date();
@@ -352,21 +384,21 @@ function showDataMenu(link, text) {
 			width = 200;
 		}
 	}
-	
+
 	//URI format
 	if (text.match(/^\w+:\/\/.+$/)) {
 		menu.push("<a href=\"" + text + "\" target=\"_blank\">Go to URI</a>");
-		
+
 		if (text.match(/\.(gif|jpg|png)$/i)) {
 			menu.push("<br/><a href=\"" + text + "\" target=\"_blank\"><img src=\"" + text + "\" style=\"width:100px\"/></a>");
 		}
 	}
-	
+
 	//Mail
 	if (text.match(/^([\w\._]+@[\w\.-]+)$/)) {
 		menu.push("<a href=\"mailto:" + text + "\" target=\"_blank\">Send Mail</a>");
 	}
-	
+
 	//Show menu
 	if (menu.length > 0) {
 		$("#data_menu").remove();
@@ -387,7 +419,7 @@ function showDataMenu(link, text) {
 
 /** init the page **/
 $(function () {
-	$(document).click(function (e) { 
+	$(document).click(function (e) {
 		hideMenus();
 		$("#field_menu").hide();
 		if (e.target.tagName == "DIV" || e.target.tagName == "P") {
@@ -395,15 +427,16 @@ $(function () {
 			closeQueryHints();
 		}
 	});
-	
+
 	//query form
-	$(".field_orders").find("input[name='field[]']").autocomplete({ 
-		source:currentFields, 
-		delay:100 
+	$(".field_orders").find("input[name='field[]']").autocomplete({
+		source:currentFields,
+		delay:100
 	});
-	
+
 	initFieldMenu();
 	initDataMenu();
+	initSelectByIdHelper();
 });
 
 /*
@@ -413,19 +446,19 @@ function refreshRecord(id, index) {
 	var text = $("#text_" + index);
 	var field = $("#field_" + index);
 	text.text("loading ...");
-	
-	var params = { 
-		"id": id, 
-		"db":currentDb, 
-		"collection":currentCollection, 
+
+	var params = {
+		"id": id,
+		"db":currentDb,
+		"collection":currentCollection,
 		"format":currentFormat
 	};
-	
+
 	var queryFields = $("input[name='query_fields[]']:checked");
 	for (var i = 0; i < queryFields.length; i ++) {
 		params["query_fields[" + i + "]"] = $(queryFields[i]).val();
 	}
-	
+
 	jQuery.ajax({
 		type: "POST",
 		url: "index.php?action=collection.record",
@@ -450,14 +483,14 @@ function refreshRecord(id, index) {
 function switchDataType(div, type) {
 	div.find("[name='data_type']").val(type);
 	div.find("select[name='format']").hide();
-	
+
 	div.find(".value").hide();
 	div.find(".bool_value").hide();
 	div.find(".double_value").hide();
 	div.find(".integer_value").hide();
 	div.find(".long_value").hide();
 	div.find(".mixed_value").hide();
-	
+
 	switch(type) {
 		case "integer":
 			div.find(".integer_value").show();
@@ -487,7 +520,7 @@ function switchDataType(div, type) {
 function setValueWithData(div, data) {
 	var dataType = data.type;
 	var value = data.value;
-	
+
 	switch(dataType) {
 		case "integer":
 			div.find("[name='integer_value']").val(value);
@@ -520,7 +553,7 @@ function switchDataTypes(div) {
 	dataType.change(function (){
 		switchDataType(div, this.value);
 	});
-	
+
 }
 
 function escapeRegexp(pattern) {
@@ -595,7 +628,7 @@ function fieldOpQuery(link) {
 		buttons["Cancel"] = function() {
 			$(this).dialog("close");
 		};
-		
+
 		div.dialog({
 			"modal": true,
 			"title": "Query on field \"" + field + "\"",
@@ -614,7 +647,7 @@ function fieldOpQuery(link) {
 
 /**
  * create new field
- * 
+ *
  * @param string link fire link
  * @param string id record id
  * @param string field field name
@@ -639,10 +672,10 @@ function fieldOpNew(link, id, field, recordIndex) {
 	if (id) {
 		buttons["Apply"] = function () {
 			jQuery.ajax({
-				data: { 
-					"id":id, 
-					"db":currentDb, 
-					"collection":currentCollection, 
+				data: {
+					"id":id,
+					"db":currentDb,
+					"collection":currentCollection,
 					"newname": div.find("input[name='newname']").val(),
 					"keep":div.find("input[name='keep']:checked").val(),
 					"data_type":div.find("[name='data_type']").val(),
@@ -679,10 +712,10 @@ function fieldOpNew(link, id, field, recordIndex) {
 			return;
 		}
 		jQuery.ajax({
-			data: { 
-				"id":"", 
-				"db":currentDb, 
-				"collection":currentCollection,  
+			data: {
+				"id":"",
+				"db":currentDb,
+				"collection":currentCollection,
 				"newname": div.find("input[name='newname']").val(),
 				"keep":div.find("input[name='keep']:checked").val(),
 				"data_type":div.find("[name='data_type']").val(),
@@ -711,7 +744,7 @@ function fieldOpNew(link, id, field, recordIndex) {
 	buttons["Cancel"] = function() {
 		$(this).dialog("close");
 	};
-	
+
 	div.dialog({
 		"modal": true,
 		"title": "Add new field",
@@ -732,10 +765,10 @@ function fieldOpNew(link, id, field, recordIndex) {
  */
 function fieldOpLoad(field, id, func) {
 	jQuery.ajax({
-		data: { 
-			"id":id, 
-			"db":currentDb, 
-			"collection":currentCollection, 
+		data: {
+			"id":id,
+			"db":currentDb,
+			"collection":currentCollection,
 			"field": field
 		},
 		success: function (data, textStatus, request) {
@@ -754,7 +787,7 @@ function fieldOpLoad(field, id, func) {
 
 /**
  * update a field
- * 
+ *
  * @param object link menu link
  * @param mixed id record id
  * @param string field field name
@@ -777,10 +810,10 @@ function fieldOpUpdate(link, id, field, recordIndex) {
 		if (id) {
 			buttons["Apply"] = function () {
 				jQuery.ajax({
-					data: { 
-						"id":id, 
-						"db":currentDb, 
-						"collection":currentCollection, 
+					data: {
+						"id":id,
+						"db":currentDb,
+						"collection":currentCollection,
 						"newname": div.find("input[name='newname']").val(),
 						"data_type":div.find("[name='data_type']").val(),
 						"value":div.find("[name='value']").val(),
@@ -816,10 +849,10 @@ function fieldOpUpdate(link, id, field, recordIndex) {
 				return;
 			}
 			jQuery.ajax({
-				data: { 
-					"id":"", 
-					"db":currentDb, 
-					"collection":currentCollection,  
+				data: {
+					"id":"",
+					"db":currentDb,
+					"collection":currentCollection,
 					"newname": div.find("input[name='newname']").val(),
 					"data_type":div.find("[name='data_type']").val(),
 					"value":div.find("[name='value']").val(),
@@ -847,7 +880,7 @@ function fieldOpUpdate(link, id, field, recordIndex) {
 		buttons["Cancel"] = function() {
 			$(this).dialog("close");
 		};
-		
+
 		div.dialog({
 			"modal": true,
 			"title": "Modify field \"" + field + "\" value",
@@ -875,11 +908,11 @@ function fieldOpRename(link) {
 	if (id) {
 		buttons["Apply"] = function () {
 			jQuery.ajax({
-				data: { 
-					"id":id, 
-					"field":field, 
-					"db":currentDb, 
-					"collection":currentCollection, 
+				data: {
+					"id":id,
+					"field":field,
+					"db":currentDb,
+					"collection":currentCollection,
 					"newname": div.find("input[name='newname']").val(),
 					"keep": div.find("input[name='keep']:checked").val()
 				},
@@ -908,11 +941,11 @@ function fieldOpRename(link) {
 			return;
 		}
 		jQuery.ajax({
-			data: { 
-				"id":"", 
-				"field":field, 
-				"db":currentDb, 
-				"collection":currentCollection,  
+			data: {
+				"id":"",
+				"field":field,
+				"db":currentDb,
+				"collection":currentCollection,
 				"newname": div.find("input[name='newname']").val(),
 				"keep":div.find("input[name='keep']:checked").val()
 			},
@@ -933,7 +966,7 @@ function fieldOpRename(link) {
 	buttons["Cancel"] = function() {
 		$(this).dialog("close");
 	};
-	
+
 	div.dialog({
 		"modal": true,
 		"title": "Rename field \"" + field + "\"",
@@ -964,7 +997,7 @@ function fieldOpRemove(link) {
 				success: function (data, textStatus, request) {
 					div.dialog("close");
 					if (typeof(recordIndex) != "undefined") {
-						refreshRecord(id, recordIndex);	
+						refreshRecord(id, recordIndex);
 					}
 					else {
 						window.location.reload();
@@ -992,7 +1025,7 @@ function fieldOpRemove(link) {
 	buttons["Cancel"] = function() {
 		$(this).dialog("close");
 	};
-	
+
 	div.dialog({
 		"modal": true,
 		"title": "Remove field \"" + field + "\"",
@@ -1023,7 +1056,7 @@ function fieldOpClear(link) {
 				success: function (data, textStatus, request) {
 					div.dialog("close");
 					if (typeof(recordIndex) != "undefined") {
-						refreshRecord(id, recordIndex);	
+						refreshRecord(id, recordIndex);
 					}
 					else {
 						window.location.reload();
@@ -1051,7 +1084,7 @@ function fieldOpClear(link) {
 	buttons["Cancel"] = function() {
 		$(this).dialog("close");
 	};
-	
+
 	div.dialog({
 		"modal": true,
 		"title": "Clear field \"" + field + "\"",
@@ -1091,7 +1124,7 @@ function fieldOpIndexes(link) {
 					indexesBody.append('<tr bgcolor="#ffffff"><td valign="top">' + index.name + '</td><td valign="top">' + index.key + '</td></tr>');
 				}
 			}
-			
+
 			var buttons = {};
 			buttons["Create"] = function () {
 				//parameters
@@ -1101,17 +1134,17 @@ function fieldOpIndexes(link) {
 				params["name"] = div.find("[name='name']").val();
 				params["is_unique"] = div.find("[name='is_unique']:checked").val();
 				params["drop_duplicate"] = div.find("[name='drop_duplicate']:checked").val();
-				
+
 				var fields = div.find("[name='field[]']");
 				for (var i = 0; i < fields.length; i ++) {
 					params["field[" + i + "]"] = $(fields[i]).val();
 				}
-				
+
 				var orders = div.find("[name='order[]']");
 				for (var i = 0; i < orders.length; i ++) {
 					params["order[" + i + "]"] = $(orders[i]).val();
 				}
-				
+
 				jQuery.ajax({
 					url: "index.php?action=field.createIndex",
 					type: "POST",
@@ -1165,7 +1198,7 @@ function fieldOpSort(link, order) {
 	var field = link.attr("field");
 	var url = window.location.toString();
 	var pieces = url.split("?", 2);
-	
+
 	if (pieces.length == 1) {
 		window.location = url + "&field[]=" + field + "&order[]=" + order;
 	}
@@ -1199,7 +1232,7 @@ function fieldOpSort(link, order) {
 				}
 			}
 		}
-		
+
 		window.location = pieces[0] + "?" + "field[]=" + field + "&order[]=" + order + newQuery;
 	}
 }
@@ -1228,7 +1261,7 @@ function clickUniqueKey(box) {
 function showQueryHistory() {
 	var div = $("#field_dialog_history");
 	var buttons = {
-		/** Clear history **/	
+		/** Clear history **/
 		"Clear": function () {
 			if (window.confirm("Are you sure to clear all the query history?")) {
 				jQuery.ajax({
@@ -1251,7 +1284,7 @@ function showQueryHistory() {
 			$(this).dialog("close");
 		}
 	};
-	
+
 	/** Retrieve history **/
 	jQuery.ajax({
 		"data": { "db":currentDb, "collection":currentCollection },
@@ -1265,24 +1298,24 @@ function showQueryHistory() {
 				"buttons":buttons,
 				"width": 450,
 				"open": function(event, ui) {
-			        $("button").blur();
-			        
-			        $(".ui-widget-overlay").unbind("click").click(function () {
+							$("button").blur();
+
+							$(".ui-widget-overlay").unbind("click").click(function () {
 						if ($(this).closest(".ui-dialog").length == 0) {
 							div.dialog("close");
 						}
 					});
-			    }
+					}
 			});
 		}
-		
+
 	});
-	
+
 }
 
 /**
  * switch format between json and array
- * 
+ *
  * @param object input data input element
  * @param object select select element
  */

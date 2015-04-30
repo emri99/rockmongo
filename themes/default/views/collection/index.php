@@ -35,6 +35,11 @@ currentFields.push("<?php h(addslashes($field));?>");
 <input type="hidden" name="collection" value="<?php h_escape($collection);?>"/>
 <input type="hidden" name="action" value="<?php h_escape(x("action"));?>"/>
 <input type="hidden" name="format" value="<?php h_escape(x("format")); ?>"/>
+<div>
+	_id:
+	<input type="text" size="30" data-name="select-by-id-field"/>
+	<input type="button" data-name="select-by-id-button" value="<?php echo hm('Select by ID'); ?>"/>
+</div>
 <table>
 	<tr>
 		<td valign="top">
